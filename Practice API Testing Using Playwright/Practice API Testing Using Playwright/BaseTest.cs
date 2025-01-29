@@ -3,29 +3,30 @@ namespace Practice_API_Testing_Using_Playwright
 {
     public class BaseTest : IAsyncLifetime
     {
-        private IPlaywright playwright;
-        private IPage page;
-        private IBrowser browser;
-        private HttpClient httpClient;
+        protected IPlaywright Playwright;
+        protected IPage Page;
+        protected IBrowser Browser;
+        protected HttpClient HttpClient;
+        
 
         // This Setup is run before each test
         public async Task InitializeAsync()
         {
             // Initialize Playwright and Launch the Browser
-            playwright = await Playwright.CreateAsync();
-            browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+            Playwright = await Microsoft.Playwright.Playwright.CreateAsync();
+            Browser = await Playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = false
             });
-            page = await browser.NewPageAsync();
-            httpClient = new HttpClient(); // Http Client to make an api request
+            Page = await Browser.NewPageAsync();
+            HttpClient = new HttpClient(); // Http Client to make an api request
         }
 
         public async Task DisposeAsync()
         {
-            await page.CloseAsync();
-            await browser.CloseAsync();
-            playwright.Dispose();
+            await Page.CloseAsync();
+            await Browser.CloseAsync();
+            Playwright.Dispose();
         }
     }
 }
