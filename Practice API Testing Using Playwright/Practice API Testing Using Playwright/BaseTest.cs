@@ -6,6 +6,7 @@ namespace Practice_API_Testing_Using_Playwright
         protected IPlaywright Playwright;
         protected IPage Page;
         protected IBrowser Browser;
+        protected IAPIRequestContext RequestContext;
         protected HttpClient HttpClient;
         
 
@@ -14,19 +15,21 @@ namespace Practice_API_Testing_Using_Playwright
         {
             // Initialize Playwright and Launch the Browser
             Playwright = await Microsoft.Playwright.Playwright.CreateAsync();
-            Browser = await Playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+            Browser = await Playwright.Chromium.LaunchAsync();
+            //Page = await Browser.NewPageAsync();
+            RequestContext = await Playwright.APIRequest.NewContextAsync(new APIRequestNewContextOptions
             {
-                Headless = false
+                BaseURL = "https://jsonplaceholder.typicode.com"
             });
-            Page = await Browser.NewPageAsync();
             HttpClient = new HttpClient(); // Http Client to make an api request
         }
 
         public async Task DisposeAsync()
         {
-            await Page.CloseAsync();
-            await Browser.CloseAsync();
-            Playwright.Dispose();
+            //await Page.CloseAsync();
+            //await Browser.CloseAsync();
+            //Playwright.Dispose();
+            await RequestContext.DisposeAsync();
         }
     }
 }
