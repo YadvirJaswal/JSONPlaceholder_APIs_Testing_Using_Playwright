@@ -57,7 +57,7 @@ namespace Practice_API_Testing_Using_Playwright
             Assert.Equal(1, jsonResponse.Id); // Assert the 'id' value matches the expected value
         }
 
-        // Validate the "Get Post By Id" request
+        // Validate the "Create Post" request
         [Fact]
         public async Task CreatePost_ShouldReturnSuccessAndCorrectData()
         {
@@ -88,6 +88,40 @@ namespace Practice_API_Testing_Using_Playwright
             Assert.Equal(newPost.UserId,responseBody.UserId);
             Assert.Equal(newPost.Title,responseBody.Title);
             Assert.Equal(newPost.Body,responseBody.Body);
+        }
+
+        // Validate the "Update Post" request
+        [Fact]
+        public async Task UpdatePost_ShouldReturnSuccessAndCorrectData()
+        {
+            // Arrange : Define Playload for the Put Request
+            var updatedPost = new PostsModel
+            {
+                UserId = 1,
+                Id = 1, // ID of the post to update
+                Title = "Updated Post",
+                Body = "This post has been updated using Playwright and C#"
+            };
+
+            var payload = JsonSerializer.Serialize(updatedPost);
+
+            // Act : Send Put Request
+            var response = await RequestContext.PutAsync($"/posts/{updatedPost.Id}", new APIRequestContextOptions
+            {
+                DataObject = updatedPost
+            });
+
+            // Assert : Validate Response Body
+            Assert.True(response.Ok, "Request status is not OK");
+
+            // Desearilize Response Body
+            var responseBody = await response.JsonAsync<PostsModel>();
+
+            Assert.NotNull(responseBody);
+            Assert.Equal(updatedPost.Id, responseBody.Id);
+            Assert.Equal(updatedPost.UserId, responseBody.UserId);
+            Assert.Equal(updatedPost.Title, responseBody.Title);
+            Assert.Equal(updatedPost.Body, responseBody.Body);
         }
     }
 }
