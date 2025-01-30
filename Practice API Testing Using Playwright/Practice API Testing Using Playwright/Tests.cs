@@ -1,4 +1,5 @@
-﻿using Practice_API_Testing_Using_Playwright.Models;
+﻿using Microsoft.Playwright;
+using Practice_API_Testing_Using_Playwright.Models;
 using System.Text.Json;
 
 namespace Practice_API_Testing_Using_Playwright
@@ -54,6 +55,39 @@ namespace Practice_API_Testing_Using_Playwright
 
             Assert.NotNull(jsonResponse); // Ensure response is not null
             Assert.Equal(1, jsonResponse.Id); // Assert the 'id' value matches the expected value
+        }
+
+        // Validate the "Get Post By Id" request
+        [Fact]
+        public async Task CreatePost_ShouldReturnSuccessAndCorrectData()
+        {
+            // Arrange : Define the payload for the post request
+            var newPost = new PostsModel
+            {
+                UserId = 1,
+                Title = "Playwright Test Post",
+                Body = "This post was created using Playwright and C#"
+            };
+
+            var payload = JsonSerializer.Serialize(newPost);
+
+            // Act : Send the post request
+            var response = await RequestContext.PostAsync("/posts", new APIRequestContextOptions
+            {
+                DataObject = newPost
+            });
+
+            // Assert :Validate the response body
+            Assert.True(response.Ok,"Response Status is not OK");
+
+            
+            // Deserialize response body 
+            var responseBody = await response.JsonAsync<PostsModel>(); 
+            Assert.NotNull(responseBody);
+
+            Assert.Equal(newPost.UserId,responseBody.UserId);
+            Assert.Equal(newPost.Title,responseBody.Title);
+            Assert.Equal(newPost.Body,responseBody.Body);
         }
     }
 }
