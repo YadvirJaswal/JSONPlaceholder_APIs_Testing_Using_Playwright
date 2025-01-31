@@ -123,5 +123,24 @@ namespace Practice_API_Testing_Using_Playwright
             Assert.Equal(updatedPost.Title, responseBody.Title);
             Assert.Equal(updatedPost.Body, responseBody.Body);
         }
+
+        // Validate the "Delete Post" request
+        [Fact]
+        public async Task DeletePost_ShouldReturnSuccess()
+        {
+            // Arrange : Specify the id of the post to delete
+            var postIdToDelete = 101;
+
+            // Act : Send Delete Request
+            var response = await RequestContext.DeleteAsync($"/posts/{postIdToDelete}");
+
+            // Assert : Validate the response
+            Assert.True(response.Ok, "Request status is not OK");
+            Assert.Equal(200, response.Status);
+
+            // Confirm the post no longer exists
+            var getResponse = await RequestContext.GetAsync($"/posts/{postIdToDelete}");
+            Assert.Equal(404,getResponse.Status); // Expecting 404 as the resource is "deleted"
+        }
     }
 }
